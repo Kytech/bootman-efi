@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices; // For DllImport
 
-namespace BootMan
+namespace BootMan.Util
 {
     class WindowsSystemDispatcherQueueHelper
     {
