@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace BootMan
 {
-    internal sealed class Firmware
+    internal static class Firmware
     {
         public enum FirmwareType
         {
@@ -17,12 +18,11 @@ namespace BootMan
         [DllImport("Kernel32.dll")]
         private static extern bool GetFirmwareType(out FirmwareType firmwareType);
 
-        // TODO: Refactor these to use Span<uint16> instead
         [DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern uint GetFirmwareEnvironmentVariable(
             string lpName,
             string lpGuid,
-            byte[] lpBuffer,
+            Span<ushort> lpBuffer,
             uint nSize
         );
 
@@ -30,7 +30,7 @@ namespace BootMan
         private static extern bool SetFirmwareEnvironmentVariable(
             string lpName,
             string lpGuid,
-            byte[] lpBuffer,
+            Span<ushort> lpBuffer,
             uint nSize
         );
 
