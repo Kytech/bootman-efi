@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace BootMan
@@ -15,7 +16,7 @@ namespace BootMan
 
         public static readonly string EFI_GLOBAL_VARIABLE = "{8BE4DF61-93CA-11D2-AA0D-00E098032B8C}";
 
-        [DllImport("Kernel32.dll")]
+        [DllImport("Kernel32.dll", SetLastError = true)]
         private static extern bool GetFirmwareType(out FirmwareType firmwareType);
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -40,16 +41,19 @@ namespace BootMan
             uint size = GetFirmwareEnvironmentVariable(name, guid, buffer, (uint)buffer.Length);
             if (size == 0)
             {
-                throw new Exception($"GetFirmwareEnvironmentVariable failed with error code {Marshal.GetLastPInvokeError()}");
+                throw new Win32Exception();
             }
             return MemoryMarshal.Cast<byte, T>(buffer)[0];
         }
 
         public static FirmwareType GetFirmwareType()
         {
-            // TODO: Do error handling to indicate win32 error
             bool success = GetFirmwareType(out FirmwareType firmwareType);
-            return success ? firmwareType : FirmwareType.FirmwareTypeUnknown;
+            if (!success)
+            {
+                throw new Win32Exception();
+            }
+            return firmwareType;
         }
     }
 }
