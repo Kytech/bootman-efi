@@ -26,7 +26,7 @@ namespace BootMan
                 string lpName,
                 string lpGuid,
                 byte[] lpBuffer,
-                uint nSize
+                int nBufferSizeInBytes
             );
 
             [DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
@@ -34,14 +34,14 @@ namespace BootMan
                 string lpName,
                 string lpGuid,
                 byte[] lpBuffer,
-                uint nSize
+                int nBufferSizeInBytes
             );
         }
 
         public static unsafe T GetFirmwareEnvironmentVariable<T>(string name, string guid) where T : unmanaged
         {
             var buffer = new byte[sizeof(T)];
-            uint size = NativeMethods.GetFirmwareEnvironmentVariable(name, guid, buffer, (uint)buffer.Length);
+            uint size = NativeMethods.GetFirmwareEnvironmentVariable(name, guid, buffer, buffer.Length);
             if (size == 0)
             {
                 throw new Win32Exception();
